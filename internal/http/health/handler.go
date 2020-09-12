@@ -20,7 +20,7 @@ func (handler *Handler) RegisterRoutes(router *mux.Router) {
 
 func (handler *Handler) Liveness() func(http.ResponseWriter, *http.Request) {
     return func(writer http.ResponseWriter, request *http.Request) {
-        writer.WriteHeader(http.StatusCreated)
+        writer.WriteHeader(http.StatusOK)
         writer.Write([]byte(`{code: "success", "message": "ok"}`))
     }
 }
