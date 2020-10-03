@@ -4,18 +4,24 @@ import (
     "log"
     "net/http"
 
+    "github.com/gorilla/csrf"
     "github.com/gorilla/mux"
+
     "github.com/meroedu/lantern/internal/driver"
     "github.com/meroedu/lantern/x/graceful"
 )
 
 func Serve(registry driver.Registry) {
-    var router = mux.NewRouter()
+    var (
+        router = mux.NewRouter()
+        CSRF   = csrf.Protect([]byte(registry.Configuration().CSRFAuthKey()))
+    )
+
     registry.RegisterRoutes(router)
 
     var server = http.Server{
         Addr:    registry.Configuration().PublicListenOn(),
-        Handler: router,
+        Handler: CSRF(router),
     }
 
     if err := graceful.Graceful(server.ListenAndServe, server.Shutdown); err != nil {
