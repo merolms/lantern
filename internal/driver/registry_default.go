@@ -2,6 +2,7 @@ package driver
 
 import (
     "github.com/gorilla/mux"
+
     "github.com/meroedu/lantern/internal/driver/configuration"
     "github.com/meroedu/lantern/internal/http/health"
 )
