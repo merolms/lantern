@@ -6,6 +6,8 @@ import (
 )
 
 type Registry interface {
+    Init() error
+
     Configuration() configuration.Provider
 
     RegisterRoutes(*mux.Router)

@@ -17,6 +17,11 @@ func Serve(registry driver.Registry) {
         CSRF   = csrf.Protect([]byte(registry.Configuration().CSRFAuthKey()))
     )
 
+    var err = registry.Init()
+    if err != nil {
+        log.Fatalf("Unable to initialize service registry: %s", err.Error())
+    }
+
     registry.RegisterRoutes(router)
 
     var server = http.Server{

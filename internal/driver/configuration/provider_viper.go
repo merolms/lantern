@@ -24,6 +24,14 @@ func (v *ViperProvider) PublicListenOn() string {
     return ":9090"
 }
 
+func (v *ViperProvider) PersisterDriverName() string {
+   return "mysql"
+}
+
+func (v *ViperProvider) PersisterDSN() string {
+    return viper.GetString("persister.dsn")
+}
+
 func (v *ViperProvider) CSRFAuthKey() string {
     return viper.GetString("csrf.auth_key")
 }
