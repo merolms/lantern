@@ -1,0 +1,20 @@
+version: '2'
+
+services:
+  mysql:
+    image: 'bitnami/mysql:latest'
+    ports:
+      - '3306:3306'
+    volumes:
+      - <path>:/bitnami/mysql/data
+    environment:
+      - MYSQL_ROOT_PASSWORD=put-your-secure-root-password
+      - MYSQL_USER=lantern
+      - MYSQL_PASSWORD=put-your-secure-password
+      - MYSQL_DATABASE=sessions
+    networks:
+      - intranet
+
+networks:
+  intranet:
+    name: lantern-intranet
