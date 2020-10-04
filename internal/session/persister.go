@@ -7,7 +7,7 @@ import (
 )
 
 type (
-    PersisterProvider interface {
+    PersistenceProvider interface {
         SessionPersister() Persister
     }
     Persister interface {

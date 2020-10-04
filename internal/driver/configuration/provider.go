@@ -7,4 +7,6 @@ type Provider interface {
     PersisterDSN() string
 
     PublicListenOn() string
+
+    SessionSecret() [][]byte
 }
