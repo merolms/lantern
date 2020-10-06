@@ -12,6 +12,7 @@ import (
 
     "github.com/meroedu/lantern/internal/driver/configuration"
     "github.com/meroedu/lantern/internal/http/health"
+    "github.com/meroedu/lantern/internal/http/registration"
     "github.com/meroedu/lantern/internal/persistence"
     "github.com/meroedu/lantern/internal/persistence/sql"
     "github.com/meroedu/lantern/internal/session"
@@ -28,7 +29,9 @@ type DefaultRegistry struct {
 
     cookieManager *sessions.CookieStore
 
-    uploadHandler *health.Handler
+    healthHandler       *health.Handler
+    registrationHandler *registration.Handler
+    sessionHandler      *session.Handler
 }
 
 func NewRegistryDefault() *DefaultRegistry {
@@ -92,11 +95,29 @@ func (r *DefaultRegistry) SessionPersister() session.Persister {
 
 func (r *DefaultRegistry) RegisterRoutes(router *mux.Router) {
     r.HealthHandler().RegisterRoutes(router)
+    r.RegistrationHandler().RegisterRoutes(router)
 }
 
 func (r *DefaultRegistry) HealthHandler() *health.Handler {
-    if r.uploadHandler == nil {
-        r.uploadHandler = health.NewHandler()
+    if r.healthHandler == nil {
+        r.healthHandler = health.NewHandler()
     }
-    return r.uploadHandler
+
+    return r.healthHandler
+}
+
+func (r *DefaultRegistry) RegistrationHandler() *registration.Handler {
+    if r.registrationHandler == nil {
+        r.registrationHandler = registration.NewHandler(r)
+    }
+
+    return r.registrationHandler
+}
+
+func (r *DefaultRegistry) SessionHandler() *session.Handler {
+    if r.sessionHandler == nil {
+        r.sessionHandler = session.NewHandler(r)
+    }
+
+    return r.sessionHandler
 }

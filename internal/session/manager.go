@@ -5,6 +5,11 @@ import (
     "net/http"
 )
 
-type Manager interface {
-    FetchFromRequest(context.Context, *http.Request) (*Session, error)
-}
+type (
+    Manager interface {
+        FetchFromRequest(context.Context, *http.Request) (*Session, error)
+    }
+    ManagerProvider interface {
+        SessionManager() Manager
+    }
+)
