@@ -12,6 +12,7 @@ import (
 
     "github.com/meroedu/lantern/internal/driver/configuration"
     "github.com/meroedu/lantern/internal/http/health"
+    "github.com/meroedu/lantern/internal/http/registration"
     "github.com/meroedu/lantern/internal/persistence"
     "github.com/meroedu/lantern/internal/persistence/sql"
     "github.com/meroedu/lantern/internal/session"
@@ -28,7 +29,7 @@ type DefaultRegistry struct {
 
     cookieManager *sessions.CookieStore
 
-    uploadHandler *health.Handler
+    healthHandler       *health.Handler
     registrationHandler *registration.Handler
     sessionHandler      *session.Handler
 }
@@ -98,10 +99,9 @@ func (r *DefaultRegistry) RegisterRoutes(router *mux.Router) {
 }
 
 func (r *DefaultRegistry) HealthHandler() *health.Handler {
-    if r.uploadHandler == nil {
-        r.uploadHandler = health.NewHandler()
+    if r.healthHandler == nil {
+        r.healthHandler = health.NewHandler()
     }
-    return r.uploadHandler
 
     return r.healthHandler
 }
