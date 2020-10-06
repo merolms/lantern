@@ -2,6 +2,7 @@ package session
 
 import (
     "context"
+    "database/sql"
     "github.com/google/uuid"
     "github.com/pkg/errors"
     "net/http"
@@ -10,6 +11,8 @@ import (
 )
 
 const DefaultCookieName = "LANTERN_SESSION"
+
+var ErrNoActiveSessionFound = errors.New("request does not have valid authentication session")
 
 var _ Manager = new(HTTPManager)
 
@@ -35,12 +38,13 @@ func NewHTTPManager(d managerDependencies) *HTTPManager {
 func (manager *HTTPManager) FetchFromRequest(ctx context.Context, r *http.Request) (*Session, error) {
     var s, err = manager.d.CookieManager().Get(r, manager.cookieName)
     if err != nil {
-        return nil, errors.WithStack(err)
+        // TODO: Should have more information to debug here
+        return nil, errors.WithStack(ErrNoActiveSessionFound)
     }
 
     var id, ok = s.Values["sid"].(string)
     if !ok {
-        return nil, errors.New("request does not have a valid authentication session")
+        return nil, errors.WithStack(ErrNoActiveSessionFound)
     }
 
     sid, err := uuid.Parse(id)
@@ -48,5 +52,14 @@ func (manager *HTTPManager) FetchFromRequest(ctx context.Context, r *http.Reques
         return nil, errors.WithStack(err)
     }
 
-    return manager.d.SessionPersister().GetSession(ctx, sid)
+    sess, err := manager.d.SessionPersister().GetSession(ctx, sid)
+    if err != nil {
+        if err == sql.ErrNoRows {
+            return nil, ErrNoActiveSessionFound
+        }
+
+        return nil, errors.WithStack(err)
+    }
+
+    return sess, nil
 }
