@@ -11,11 +11,13 @@ import (
     "github.com/pkg/errors"
 
     "github.com/meroedu/lantern/internal/driver/configuration"
+    "github.com/meroedu/lantern/internal/entity"
     "github.com/meroedu/lantern/internal/http/health"
     "github.com/meroedu/lantern/internal/http/registration"
     "github.com/meroedu/lantern/internal/persistence"
     "github.com/meroedu/lantern/internal/persistence/sql"
     "github.com/meroedu/lantern/internal/session"
+    "github.com/meroedu/lantern/x/hash"
 )
 
 var _ Registry = new(DefaultRegistry)
@@ -29,9 +31,23 @@ type DefaultRegistry struct {
 
     cookieManager *sessions.CookieStore
 
+    passwordHasher hash.Hasher
+
     healthHandler       *health.Handler
     registrationHandler *registration.Handler
     sessionHandler      *session.Handler
+}
+
+func (r *DefaultRegistry) Hasher() hash.Hasher {
+    if r.passwordHasher == nil {
+        r.passwordHasher = hash.NewArgon2()
+    }
+
+    return r.passwordHasher
+}
+
+func (r *DefaultRegistry) IdentityPersister() entity.Persister {
+    return r.persister
 }
 
 func NewRegistryDefault() *DefaultRegistry {
