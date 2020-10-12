@@ -5,6 +5,7 @@ import (
     "github.com/gorilla/sessions"
 
     "github.com/meroedu/lantern/internal/driver/configuration"
+    "github.com/meroedu/lantern/x/hash"
 )
 
 type Registry interface {
@@ -15,4 +16,6 @@ type Registry interface {
     CookieManager() sessions.Store
 
     RegisterRoutes(*mux.Router)
+
+    hash.Provider
 }
